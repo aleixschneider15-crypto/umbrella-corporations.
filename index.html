@@ -40,14 +40,13 @@
     button { margin-top: 14px; padding: 10px 14px; border-radius: 10px; border: 1px solid #3a3d44; background: linear-gradient(180deg, #1b1c21, #15161a); color: var(--text); cursor: pointer; }
     button:hover { border-color: #50545c; }
     .msg { margin-top: 10px; min-height: 22px; }
-    .protected { margin-top: 18px; padding: 14px; border-radius: 12px; border: 1px dashed #3a3d44; background: rgba(255,255,255,0.04); }
     .correo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .correo-lista { display: grid; gap: 16px; }
     .correo-item {
       background: rgba(255,255,255,0.05);
       padding: 14px; border-radius: 10px; border: 1px solid var(--border);
     }
-    .sr-only { position: absolute; left: -9999px; }
+    .sr-only { position: none; display: none; }
     footer { position: relative; z-index: 2; padding: 18px; text-align: center; color: var(--muted); }
   </style>
 </head>
@@ -80,9 +79,11 @@
     </section>
 
     <!-- Panel privado -->
-    <section id="contenido-protegido" class="protected sr-only">
+    <section id="contenido-protegido" class="card sr-only">
       <h3>Panel privado</h3>
       <p>Bienvenido al portal interno de Umbrella Corporations.</p>
+      <button onclick="mostrarSeccion('correo')">Ir al Correo</button>
+      <button onclick="mostrarSeccion('medico')">Ir al Portal Médico</button>
     </section>
 
     <!-- Correo Corporativo -->
@@ -90,7 +91,7 @@
       <div class="correo-header">
         <h2>Correo Corporativo — umbrella-corporations.com</h2>
         <div>
-          <button id="nuevoBtn">Redactar</button>
+          <button onclick="mostrarSeccion('contenido-protegido')">Volver</button>
           <button id="logoutBtn">Cerrar sesión</button>
         </div>
       </div>
@@ -111,34 +112,32 @@
         </article>
       </section>
     </section>
+
+    <!-- Portal Médico -->
+    <section id="medico" class="correo-app sr-only">
+      <div class="correo-header">
+        <h2>Portal Médico — Umbrella Corporations</h2>
+        <div>
+          <button onclick="mostrarSeccion('contenido-protegido')">Volver</button>
+          <button id="logoutBtn2">Cerrar sesión</button>
+        </div>
+      </div>
+
+      <section class="correo-lista">
+        <article class="correo-item">
+          <h3>Ficha de paciente: ID-0457</h3>
+          <p><strong>Nombre:</strong> Evelyn Marcus</p>
+          <p><strong>Diagnóstico:</strong> Exposición prolongada al virus T</p>
+          <p><strong>Estado:</strong> Estable bajo observación</p>
+        </article>
+
+        <article class="correo-item">
+          <h3>Protocolo de contención biológica</h3>
+          <p><strong>Fecha:</strong> 28/10/2025</p>
+          <p>Se han actualizado las medidas de aislamiento para el ala médica subterránea.</p>
+        </article>
+      </section>
+    </section>
   </main>
 
-  <footer>
-    <p>© 2025 — Umbrella Corporations</p>
-  </footer>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import {
-      getAuth,
-      signInWithEmailAndPassword,
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDCliOcd9eQky_HrT4EPciJQFPN5h7L3vw",
-      authDomain: "umbrella-web.firebaseapp.com",
-      projectId: "umbrella-web",
-      storageBucket: "umbrella-web.firebasestorage.app",
-      messagingSenderId: "852354344645",
-      appId: "1:852354344645:web:8280c7a88ae5d2973af2ac",
-      measurementId: "G-LL39DJFBMQ"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    const form = document.getElementById("loginForm");
-    const msg = document.getElementById("mensaje");
-    const logoutBtn = document.getElementById("logoutBtn");
+  <
