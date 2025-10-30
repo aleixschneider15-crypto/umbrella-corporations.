@@ -1,175 +1,3 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Umbrella Corporations — Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background-color: #f4f6f8;
-      color: #333;
-    }
-    .sidebar {
-      position: fixed;
-      top: 0; left: 0;
-      width: 220px;
-      height: 100%;
-      background-color: #1f2937;
-      color: #fff;
-      padding: 20px;
-    }
-    .sidebar h2 {
-      font-size: 1.2rem;
-      margin-bottom: 20px;
-    }
-    .sidebar button {
-      display: block;
-      width: 100%;
-      margin: 10px 0;
-      padding: 10px;
-      background: #374151;
-      border: none;
-      color: #fff;
-      cursor: pointer;
-      border-radius: 6px;
-    }
-    .sidebar button:hover {
-      background: #4b5563;
-    }
-    .main {
-      margin-left: 240px;
-      padding: 20px;
-    }
-    .card {
-      background: #fff;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    h3 {
-      margin-top: 0;
-    }
-    label {
-      display: block;
-      margin-top: 10px;
-      font-weight: 600;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 8px;
-      margin-top: 4px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    button.submit {
-      margin-top: 12px;
-      padding: 10px 16px;
-      background: #2563eb;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    button.submit:hover {
-      background: #1d4ed8;
-    }
-    .hidden {
-      display: none;
-    }
-    .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-    .topbar h1 {
-      font-size: 1.5rem;
-    }
-  </style>
-</head>
-<body>
-  <div class="sidebar">
-    <h2>Umbrella Corp</h2>
-    <button onclick="mostrar('correo')">Correo</button>
-    <button onclick="mostrar('medico')">Médico</button>
-    <button onclick="mostrar('stars')">S.T.A.R.S.</button>
-    <button onclick="mostrar('archivos')">Archivos</button>
-    <button onclick="logout()">Cerrar sesión</button>
-  </div>
-  <div class="main">
-    <div class="topbar">
-      <h1>Panel Administrativo</h1>
-      <p id="usuario"></p>
-    </div>
-    <!-- Sección Correo -->
-    <section id="correo" class="card hidden">
-      <h3>Correo Corporativo</h3>
-      <div id="correoLista">
-        <p><strong>De:</strong> seguridad@umbrella.com</p>
-        <p><strong>Asunto:</strong> Informe de laboratorio</p>
-        <p>Se ha detectado actividad no autorizada en el laboratorio 3B.</p>
-      </div>
-    </section>
-
-    <!-- Sección Médico -->
-    <section id="medico" class="card hidden">
-      <h3>Portal Médico</h3>
-      <form id="formPaciente">
-        <label>ID del paciente</label>
-        <input type="text" id="pacienteId" required />
-        <label>Nombre</label>
-        <input type="text" id="pacienteNombre" required />
-        <label>Diagnóstico</label>
-        <input type="text" id="pacienteDiagnostico" required />
-        <label>Estado</label>
-        <input type="text" id="pacienteEstado" required />
-        <button type="submit" class="submit">Guardar ficha</button>
-      </form>
-      <form id="buscarPorIdForm">
-        <label>Buscar paciente por ID</label>
-        <input type="text" id="buscarId" required />
-        <button type="submit" class="submit">Buscar</button>
-      </form>
-      <div id="resultadoId"></div>
-    </section>
-
-    <!-- Sección S.T.A.R.S. -->
-    <section id="stars" class="card hidden">
-      <h3>Panel S.T.A.R.S.</h3>
-      <form id="formMision">
-        <label>Agente</label>
-        <input type="text" id="agente" required />
-        <label>Rango</label>
-        <input type="text" id="rango" required />
-        <label>Estado</label>
-        <input type="text" id="estado" required />
-        <label>Misión</label>
-        <textarea id="mision" required></textarea>
-        <button type="submit" class="submit">Registrar misión</button>
-      </form>
-      <form id="buscarAgenteForm">
-        <label>Buscar misiones por agente</label>
-        <input type="text" id="buscarAgente" required />
-        <button type="submit" class="submit">Buscar</button>
-      </form>
-      <div id="resultadoMisiones"></div>
-    </section>
-
-    <!-- Sección Archivos -->
-    <section id="archivos" class="card hidden">
-      <h3>Subida de Archivos</h3>
-      <form id="uploadForm">
-        <label>Selecciona un archivo</label>
-        <input type="file" id="fileInput" />
-        <button type="submit" class="submit">Subir</button>
-      </form>
-      <div id="uploadStatus"></div>
-    </section>
-  </div>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
   import {
@@ -197,12 +25,13 @@
   } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
   const firebaseConfig = {
-    apiKey: "TU_API_KEY",
-    authDomain: "TU_DOMINIO.firebaseapp.com",
-    projectId: "TU_ID_PROYECTO",
-    storageBucket: "TU_BUCKET.appspot.com",
-    messagingSenderId: "TU_SENDER_ID",
-    appId: "TU_APP_ID"
+    apiKey: "AIzaSyDCliOcd9eQky_HrT4EPciJQFPN5h7L3vw",
+    authDomain: "umbrella-web.firebaseapp.com",
+    projectId: "umbrella-web",
+    storageBucket: "umbrella-web.appspot.com",
+    messagingSenderId: "852354344645",
+    appId: "1:852354344645:web:8280c7a88ae5d2973af2ac",
+    measurementId: "G-LL39DJFBMQ"
   };
 
   const app = initializeApp(firebaseConfig);
@@ -210,62 +39,64 @@
   const db = getFirestore(app);
   const storage = getStorage(app);
 
-  const usuario = document.getElementById("usuario");
+  const msg = document.getElementById("mensaje");
 
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    usuario.textContent = `Bienvenido, ${user.email}`;
-    const token = await user.getIdTokenResult();
-    const rol = token.claims.rol;
-    if (rol === "medico") mostrar("medico");
-    else if (rol === "agente") mostrar("stars");
-    else mostrar("correo");
-  } else {
-    document.querySelector(".main").innerHTML = `
-      <div class="card">
-        <h3>Acceso denegado</h3>
-        <p>Debes iniciar sesión desde el panel autorizado.</p>
-      </div>
-    `;
-  }
-});
-const pacienteId = document.getElementById("pacienteId");
-const pacienteNombre = document.getElementById("pacienteNombre");
-const pacienteDiagnostico = document.getElementById("pacienteDiagnostico");
-const pacienteEstado = document.getElementById("pacienteEstado");
-const buscarId = document.getElementById("buscarId");
-const resultadoId = document.getElementById("resultadoId");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const logoutBtn2 = document.getElementById("logoutBtn2");
+  const logoutBtn3 = document.getElementById("logoutBtn3");
+  const logoutBtn4 = document.getElementById("logoutBtn4");
 
-const agente = document.getElementById("agente");
-const rango = document.getElementById("rango");
-const estado = document.getElementById("estado");
-const mision = document.getElementById("mision");
-const buscarAgente = document.getElementById("buscarAgente");
-const resultadoMisiones = document.getElementById("resultadoMisiones");
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    msg.textContent = "Procesando…";
+    try {
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      msg.textContent = "✅ Bienvenido " + cred.user.email;
+    } catch (err) {
+      msg.textContent = "❌ " + err.message;
+    }
+  });
 
-const fileInput = document.getElementById("fileInput");
-const uploadStatus = document.getElementById("uploadStatus");
-
-  window.mostrar = function(id) {
-    ["correo", "medico", "stars", "archivos"].forEach(sec => {
-      document.getElementById(sec).classList.add("hidden");
-    });
-    document.getElementById(id).classList.remove("hidden");
-  };
-
-  window.logout = async function() {
+  logoutBtn.onclick = logoutBtn2.onclick = logoutBtn3.onclick = logoutBtn4.onclick = async () => {
     await signOut(auth);
-    window.location.href = "/login.html";
+    msg.textContent = "Has cerrado sesión.";
+    mostrarSeccion("loginSection");
   };
 
-  // Médico
+  onAuthStateChanged(auth, async (user) => {
+    const conectado = !!user;
+    document.getElementById("loginSection").classList.toggle("sr-only", conectado);
+    document.getElementById("contenido-protegido").classList.toggle("sr-only", !conectado);
+    ["correo", "medico", "stars", "archivos"].forEach(id => {
+      document.getElementById(id).classList.add("sr-only");
+    });
+
+    if (user) {
+      const token = await user.getIdTokenResult();
+      const rol = token.claims.rol;
+      if (rol === "medico") mostrarSeccion("medico");
+      else if (rol === "agente") mostrarSeccion("stars");
+      else if (rol === "admin") mostrarSeccion("contenido-protegido");
+    }
+  });
+
+  window.mostrarSeccion = function(id) {
+    ["contenido-protegido", "correo", "medico", "stars", "archivos", "loginSection"].forEach(sec => {
+      document.getElementById(sec).classList.add("sr-only");
+    });
+    document.getElementById(id).classList.remove("sr-only");
+  };
+
+  // Portal Médico
   document.getElementById("formPaciente").addEventListener("submit", async (e) => {
     e.preventDefault();
     const ficha = {
-      id: pacienteId.value,
-      nombre: pacienteNombre.value,
-      diagnostico: pacienteDiagnostico.value,
-      estado: pacienteEstado.value
+      id: document.getElementById("pacienteId").value,
+      nombre: document.getElementById("pacienteNombre").value,
+      diagnostico: document.getElementById("pacienteDiagnostico").value,
+      estado: document.getElementById("pacienteEstado").value
     };
     await addDoc(collection(db, "pacientes"), ficha);
     alert("Ficha guardada");
@@ -273,12 +104,14 @@ const uploadStatus = document.getElementById("uploadStatus");
 
   document.getElementById("buscarPorIdForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const q = query(collection(db, "pacientes"), where("id", "==", buscarId.value));
+    const idBuscado = document.getElementById("buscarId").value;
+    const q = query(collection(db, "pacientes"), where("id", "==", idBuscado));
     const resultados = await getDocs(q);
-    resultadoId.innerHTML = "";
+    const contenedor = document.getElementById("resultadoId");
+    contenedor.innerHTML = "";
     resultados.forEach(doc => {
       const data = doc.data();
-      resultadoId.innerHTML += `
+      contenedor.innerHTML += `
         <div>
           <h4>${data.nombre}</h4>
           <p>Diagnóstico: ${data.diagnostico}</p>
@@ -311,14 +144,14 @@ const uploadStatus = document.getElementById("uploadStatus");
     }
   };
 
-  // S.T.A.R.S.
+  // Panel S.T.A.R.S.
   document.getElementById("formMision").addEventListener("submit", async (e) => {
     e.preventDefault();
     const mision = {
-      agente: agente.value,
-      rango: rango.value,
-      estado: estado.value,
-      mision: mision.value
+      agente: document.getElementById("agente").value,
+      rango: document.getElementById("rango").value,
+      estado: document.getElementById("estado").value,
+      mision: document.getElementById("mision").value
     };
     await addDoc(collection(db, "misiones"), mision);
     alert("Misión registrada");
@@ -326,12 +159,14 @@ const uploadStatus = document.getElementById("uploadStatus");
 
   document.getElementById("buscarAgenteForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const q = query(collection(db, "misiones"), where("agente", "==", buscarAgente.value));
+    const agente = document.getElementById("buscarAgente").value;
+    const q = query(collection(db, "misiones"), where("agente", "==", agente));
     const resultados = await getDocs(q);
-    resultadoMisiones.innerHTML = "";
+    const contenedor = document.getElementById("resultadoMisiones");
+    contenedor.innerHTML = "";
     resultados.forEach(doc => {
       const data = doc.data();
-      resultadoMisiones.innerHTML += `
+      contenedor.innerHTML += `
         <div>
           <h4>${data.agente}</h4>
           <p>Rango: ${data.rango}</p>
@@ -342,15 +177,15 @@ const uploadStatus = document.getElementById("uploadStatus");
     });
   });
 
-  // Archivos
+  // Subida de archivos
   document.getElementById("uploadForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const file = fileInput.files[0];
+    const file = document.getElementById("fileInput").files[0];
     if (!file) return;
     const storageRef = ref(storage, "archivos/" + file.name);
     await uploadBytes(storageRef, file);
     const url = await getDownloadURL(storageRef);
-    uploadStatus.textContent = "Archivo subido: " + url;
+    document.getElementById("uploadStatus").textContent = "Archivo subido: " + url;
   });
 </script>
 </body>
