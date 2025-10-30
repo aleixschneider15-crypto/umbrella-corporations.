@@ -212,18 +212,39 @@
 
   const usuario = document.getElementById("usuario");
 
-  onAuthStateChanged(auth, async (user) => {
-    if (user) {
-      usuario.textContent = user.email;
-      const token = await user.getIdTokenResult();
-      const rol = token.claims.rol;
-      if (rol === "medico") mostrar("medico");
-      else if (rol === "agente") mostrar("stars");
-      else mostrar("correo");
-    } else {
-      window.location.href = "/login.html";
-    }
-  });
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    usuario.textContent = `Bienvenido, ${user.email}`;
+    const token = await user.getIdTokenResult();
+    const rol = token.claims.rol;
+    if (rol === "medico") mostrar("medico");
+    else if (rol === "agente") mostrar("stars");
+    else mostrar("correo");
+  } else {
+    document.querySelector(".main").innerHTML = `
+      <div class="card">
+        <h3>Acceso denegado</h3>
+        <p>Debes iniciar sesión desde el panel autorizado.</p>
+      </div>
+    `;
+  }
+});
+const pacienteId = document.getElementById("pacienteId");
+const pacienteNombre = document.getElementById("pacienteNombre");
+const pacienteDiagnostico = document.getElementById("pacienteDiagnostico");
+const pacienteEstado = document.getElementById("pacienteEstado");
+const buscarId = document.getElementById("buscarId");
+const resultadoId = document.getElementById("resultadoId");
+
+const agente = document.getElementById("agente");
+const rango = document.getElementById("rango");
+const estado = document.getElementById("estado");
+const mision = document.getElementById("mision");
+const buscarAgente = document.getElementById("buscarAgente");
+const resultadoMisiones = document.getElementById("resultadoMisiones");
+
+const fileInput = document.getElementById("fileInput");
+const uploadStatus = document.getElementById("uploadStatus");
 
   window.mostrar = function(id) {
     ["correo", "medico", "stars", "archivos"].forEach(sec => {
