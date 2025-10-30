@@ -138,6 +138,84 @@
         </article>
       </section>
     </section>
+    <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import {
+    getAuth,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDCliOcd9eQky_HrT4EPciJQFPN5h7L3vw",
+    authDomain: "umbrella-web.firebaseapp.com",
+    projectId: "umbrella-web",
+    storageBucket: "umbrella-web.firebasestorage.app",
+    messagingSenderId: "852354344645",
+    appId: "1:852354344645:web:8280c7a88ae5d2973af2ac",
+    measurementId: "G-LL39DJFBMQ"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  const form = document.getElementById("loginForm");
+  const msg = document.getElementById("mensaje");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const logoutBtn2 = document.getElementById("logoutBtn2");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    msg.textContent = "Procesando…";
+
+    try {
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      msg.textContent = "✅ Bienvenido " + cred.user.email;
+    } catch (err) {
+      const errores = {
+        "auth/invalid-email": "El email no es válido.",
+        "auth/user-not-found": "No existe un usuario con ese email.",
+        "auth/wrong-password": "Contraseña incorrecta.",
+        "auth/too-many-requests": "Demasiados intentos. Intenta más tarde.",
+        "auth/network-request-failed": "Error de red. Revisa tu conexión."
+      };
+      msg.textContent = "❌ " + (errores[err.code] || "Error: " + err.message);
+    }
+  });
+
+  logoutBtn.addEventListener("click", async () => {
+    await signOut(auth);
+    msg.textContent = "Has cerrado sesión.";
+  });
+
+  logoutBtn2.addEventListener("click", async () => {
+    await signOut(auth);
+    msg.textContent = "Has cerrado sesión.";
+  });
+
+  onAuthStateChanged(auth, (user) => {
+    const conectado = !!user;
+
+    document.getElementById("loginSection").classList.toggle("sr-only", conectado);
+    document.getElementById("contenido-protegido").classList.toggle("sr-only", !conectado);
+    document.getElementById("correo").classList.add("sr-only");
+    document.getElementById("medico").classList.add("sr-only");
+  });
+
+  window.mostrarSeccion = function(id) {
+    document.getElementById("contenido-protegido").classList.add("sr-only");
+    document.getElementById("correo").classList.add("sr-only");
+    document.getElementById("medico").classList.add("sr-only");
+    document.getElementById(id).classList.remove("sr-only");
+  };
+</script>
+</body>
+</html>
+
   </main>
 
   <
