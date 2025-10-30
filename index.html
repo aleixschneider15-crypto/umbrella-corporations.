@@ -35,8 +35,8 @@
     .card h2, .correo-app h2 { margin: 0 0 6px; font-size: 1.3rem; }
     .sub { margin: 0 0 18px; color: var(--muted); font-size: 0.95rem; }
     label { display: block; margin: 10px 0 6px; color: var(--muted); font-size: 0.9rem; }
-    input { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.06); color: var(--text); }
-    input::placeholder { color: #c2c4c8; }
+    input, textarea { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.06); color: var(--text); }
+    input::placeholder, textarea::placeholder { color: #c2c4c8; }
     button { margin-top: 14px; padding: 10px 14px; border-radius: 10px; border: 1px solid #3a3d44; background: linear-gradient(180deg, #1b1c21, #15161a); color: var(--text); cursor: pointer; }
     button:hover { border-color: #50545c; }
     .msg { margin-top: 10px; min-height: 22px; }
@@ -46,33 +46,28 @@
       background: rgba(255,255,255,0.05);
       padding: 14px; border-radius: 10px; border: 1px solid var(--border);
     }
-    .sr-only { position: none; display: none; }
+    .sr-only { display: none; }
     footer { position: relative; z-index: 2; padding: 18px; text-align: center; color: var(--muted); }
   </style>
 </head>
 <body>
   <div class="overlay"></div>
-
   <header>
     <div class="brand">
       <div class="dot"></div>
       <h1>Umbrella Corporations</h1>
     </div>
   </header>
-
   <main>
     <!-- Login -->
     <section class="card" id="loginSection">
       <h2>Iniciar sesión</h2>
       <p class="sub">Accede al portal corporativo.</p>
-
       <form id="loginForm">
         <label for="email">Email</label>
         <input type="email" id="email" placeholder="usuario@umbrella-corporations.com" required />
-
         <label for="password">Contraseña</label>
         <input type="password" id="password" placeholder="••••••••" required />
-
         <button type="submit" id="loginBtn">Entrar</button>
         <p id="mensaje" class="msg"></p>
       </form>
@@ -84,6 +79,8 @@
       <p>Bienvenido al portal interno de Umbrella Corporations.</p>
       <button onclick="mostrarSeccion('correo')">Ir al Correo</button>
       <button onclick="mostrarSeccion('medico')">Ir al Portal Médico</button>
+      <button onclick="mostrarSeccion('stars')">Ir al equipo S.T.A.R.S.</button>
+      <button onclick="mostrarSeccion('archivos')">Subir archivos</button>
     </section>
 
     <!-- Correo Corporativo -->
@@ -95,7 +92,6 @@
           <button id="logoutBtn">Cerrar sesión</button>
         </div>
       </div>
-
       <section class="correo-lista">
         <article class="correo-item">
           <h3>Informe de seguridad</h3>
@@ -103,42 +99,83 @@
           <p><strong>Fecha:</strong> 30/10/2025</p>
           <p>Se ha detectado actividad no autorizada en el laboratorio 3B.</p>
         </article>
-
-        <article class="correo-item">
-          <h3>Actualización de protocolos</h3>
-          <p><strong>De:</strong> hr@umbrella-corporations.com</p>
-          <p><strong>Fecha:</strong> 29/10/2025</p>
-          <p>Los nuevos protocolos de acceso entran en vigor el lunes.</p>
-        </article>
       </section>
     </section>
 
     <!-- Portal Médico -->
     <section id="medico" class="correo-app sr-only">
       <div class="correo-header">
-        <h2>Portal Médico — Umbrella Corporations</h2>
+        <h2>Portal Médico</h2>
         <div>
           <button onclick="mostrarSeccion('contenido-protegido')">Volver</button>
           <button id="logoutBtn2">Cerrar sesión</button>
         </div>
       </div>
-
-      <section class="correo-lista">
-        <article class="correo-item">
-          <h3>Ficha de paciente: ID-0457</h3>
-          <p><strong>Nombre:</strong> Evelyn Marcus</p>
-          <p><strong>Diagnóstico:</strong> Exposición prolongada al virus T</p>
-          <p><strong>Estado:</strong> Estable bajo observación</p>
-        </article>
-
-        <article class="correo-item">
-          <h3>Protocolo de contención biológica</h3>
-          <p><strong>Fecha:</strong> 28/10/2025</p>
-          <p>Se han actualizado las medidas de aislamiento para el ala médica subterránea.</p>
-        </article>
-      </section>
+      <form id="formPaciente">
+        <label>ID del paciente</label>
+        <input type="text" id="pacienteId" required />
+        <label>Nombre</label>
+        <input type="text" id="pacienteNombre" required />
+        <label>Diagnóstico</label>
+        <input type="text" id="pacienteDiagnostico" required />
+        <label>Estado</label>
+        <input type="text" id="pacienteEstado" required />
+        <button type="submit">Guardar ficha</button>
+      </form>
+      <form id="buscarPorIdForm">
+        <label>Buscar paciente por ID</label>
+        <input type="text" id="buscarId" required />
+        <button type="submit">Buscar</button>
+      </form>
+      <div id="resultadoId"></div>
     </section>
-    <script type="module">
+
+    <!-- Panel S.T.A.R.S. -->
+    <section id="stars" class="correo-app sr-only">
+      <div class="correo-header">
+        <h2>Equipo S.T.A.R.S.</h2>
+        <div>
+          <button onclick="mostrarSeccion('contenido-protegido')">Volver</button>
+          <button id="logoutBtn3">Cerrar sesión</button>
+        </div>
+      </div>
+      <form id="formMision">
+        <label>Agente</label>
+        <input type="text" id="agente" required />
+        <label>Rango</label>
+        <input type="text" id="rango" required />
+        <label>Estado</label>
+        <input type="text" id="estado" required />
+        <label>Misión</label>
+        <textarea id="mision" required></textarea>
+        <button type="submit">Registrar misión</button>
+      </form>
+      <form id="buscarAgenteForm">
+        <label>Buscar misiones por agente</label>
+        <input type="text" id="buscarAgente" required />
+        <button type="submit">Buscar</button>
+      </form>
+      <div id="resultadoMisiones"></div>
+    </section>
+
+    <!-- Subida de archivos -->
+    <section id="archivos" class="correo-app sr-only">
+      <div class="correo-header">
+        <h2>Subir archivos</h2>
+        <div>
+          <button onclick="mostrarSeccion('contenido-protegido')">Volver</button>
+          <button id="logoutBtn4">Cerrar sesión</button>
+        </div>
+      </div>
+      <form id="uploadForm">
+        <label>Selecciona un archivo</label>
+        <input type="file" id="fileInput" />
+        <button type="submit">Subir</button>
+      </form>
+      <div id="uploadStatus"></div>
+    </section>
+  </main>
+<script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
   import {
     getAuth,
@@ -146,12 +183,29 @@
     onAuthStateChanged,
     signOut
   } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    getDocs,
+    query,
+    where,
+    setDoc,
+    doc,
+    deleteDoc
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+  import {
+    getStorage,
+    ref,
+    uploadBytes,
+    getDownloadURL
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDCliOcd9eQky_HrT4EPciJQFPN5h7L3vw",
     authDomain: "umbrella-web.firebaseapp.com",
     projectId: "umbrella-web",
-    storageBucket: "umbrella-web.firebasestorage.app",
+    storageBucket: "umbrella-web.appspot.com",
     messagingSenderId: "852354344645",
     appId: "1:852354344645:web:8280c7a88ae5d2973af2ac",
     measurementId: "G-LL39DJFBMQ"
@@ -159,63 +213,157 @@
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
 
-  const form = document.getElementById("loginForm");
   const msg = document.getElementById("mensaje");
+
   const logoutBtn = document.getElementById("logoutBtn");
   const logoutBtn2 = document.getElementById("logoutBtn2");
+  const logoutBtn3 = document.getElementById("logoutBtn3");
+  const logoutBtn4 = document.getElementById("logoutBtn4");
 
-  form.addEventListener("submit", async (e) => {
+  document.getElementById("loginForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
-
     msg.textContent = "Procesando…";
-
     try {
       const cred = await signInWithEmailAndPassword(auth, email, password);
       msg.textContent = "✅ Bienvenido " + cred.user.email;
     } catch (err) {
-      const errores = {
-        "auth/invalid-email": "El email no es válido.",
-        "auth/user-not-found": "No existe un usuario con ese email.",
-        "auth/wrong-password": "Contraseña incorrecta.",
-        "auth/too-many-requests": "Demasiados intentos. Intenta más tarde.",
-        "auth/network-request-failed": "Error de red. Revisa tu conexión."
-      };
-      msg.textContent = "❌ " + (errores[err.code] || "Error: " + err.message);
+      msg.textContent = "❌ " + err.message;
     }
   });
 
-  logoutBtn.addEventListener("click", async () => {
+  logoutBtn.onclick = logoutBtn2.onclick = logoutBtn3.onclick = logoutBtn4.onclick = async () => {
     await signOut(auth);
     msg.textContent = "Has cerrado sesión.";
-  });
+    mostrarSeccion("loginSection");
+  };
 
-  logoutBtn2.addEventListener("click", async () => {
-    await signOut(auth);
-    msg.textContent = "Has cerrado sesión.";
-  });
-
-  onAuthStateChanged(auth, (user) => {
+  onAuthStateChanged(auth, async (user) => {
     const conectado = !!user;
-
     document.getElementById("loginSection").classList.toggle("sr-only", conectado);
     document.getElementById("contenido-protegido").classList.toggle("sr-only", !conectado);
-    document.getElementById("correo").classList.add("sr-only");
-    document.getElementById("medico").classList.add("sr-only");
+    ["correo", "medico", "stars", "archivos"].forEach(id => {
+      document.getElementById(id).classList.add("sr-only");
+    });
+
+    if (user) {
+      const token = await user.getIdTokenResult();
+      const rol = token.claims.rol;
+      if (rol === "medico") mostrarSeccion("medico");
+      else if (rol === "agente") mostrarSeccion("stars");
+      else if (rol === "admin") mostrarSeccion("contenido-protegido");
+    }
   });
 
   window.mostrarSeccion = function(id) {
-    document.getElementById("contenido-protegido").classList.add("sr-only");
-    document.getElementById("correo").classList.add("sr-only");
-    document.getElementById("medico").classList.add("sr-only");
+    ["contenido-protegido", "correo", "medico", "stars", "archivos", "loginSection"].forEach(sec => {
+      document.getElementById(sec).classList.add("sr-only");
+    });
     document.getElementById(id).classList.remove("sr-only");
   };
+
+  // Portal Médico
+  document.getElementById("formPaciente").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const ficha = {
+      id: document.getElementById("pacienteId").value,
+      nombre: document.getElementById("pacienteNombre").value,
+      diagnostico: document.getElementById("pacienteDiagnostico").value,
+      estado: document.getElementById("pacienteEstado").value
+    };
+    await addDoc(collection(db, "pacientes"), ficha);
+    alert("Ficha guardada");
+  });
+
+  document.getElementById("buscarPorIdForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const idBuscado = document.getElementById("buscarId").value;
+    const q = query(collection(db, "pacientes"), where("id", "==", idBuscado));
+    const resultados = await getDocs(q);
+    const contenedor = document.getElementById("resultadoId");
+    contenedor.innerHTML = "";
+    resultados.forEach(doc => {
+      const data = doc.data();
+      contenedor.innerHTML += `
+        <div>
+          <h4>${data.nombre}</h4>
+          <p>Diagnóstico: ${data.diagnostico}</p>
+          <p>Estado: ${data.estado}</p>
+          <button onclick="editarPaciente('${doc.id}')">Editar</button>
+          <button onclick="eliminarPaciente('${doc.id}')">Eliminar</button>
+        </div>
+      `;
+    });
+  });
+
+  window.editarPaciente = async function(docId) {
+    const nuevoNombre = prompt("Nuevo nombre:");
+    const nuevoDiagnostico = prompt("Nuevo diagnóstico:");
+    const nuevoEstado = prompt("Nuevo estado:");
+    if (nuevoNombre && nuevoDiagnostico && nuevoEstado) {
+      await setDoc(doc(db, "pacientes", docId), {
+        nombre: nuevoNombre,
+        diagnostico: nuevoDiagnostico,
+        estado: nuevoEstado
+      }, { merge: true });
+      alert("Ficha actualizada");
+    }
+  };
+
+  window.eliminarPaciente = async function(docId) {
+    if (confirm("¿Eliminar esta ficha?")) {
+      await deleteDoc(doc(db, "pacientes", docId));
+      alert("Ficha eliminada");
+    }
+  };
+
+  // Panel S.T.A.R.S.
+  document.getElementById("formMision").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const mision = {
+      agente: document.getElementById("agente").value,
+      rango: document.getElementById("rango").value,
+      estado: document.getElementById("estado").value,
+      mision: document.getElementById("mision").value
+    };
+    await addDoc(collection(db, "misiones"), mision);
+    alert("Misión registrada");
+  });
+
+  document.getElementById("buscarAgenteForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const agente = document.getElementById("buscarAgente").value;
+    const q = query(collection(db, "misiones"), where("agente", "==", agente));
+    const resultados = await getDocs(q);
+    const contenedor = document.getElementById("resultadoMisiones");
+    contenedor.innerHTML = "";
+    resultados.forEach(doc => {
+      const data = doc.data();
+      contenedor.innerHTML += `
+        <div>
+          <h4>${data.agente}</h4>
+          <p>Rango: ${data.rango}</p>
+          <p>Estado: ${data.estado}</p>
+          <p>Misión: ${data.mision}</p>
+        </div>
+      `;
+    });
+  });
+
+  // Subida de archivos
+  document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const file = document.getElementById("fileInput").files[0];
+    if (!file) return;
+    const storageRef = ref(storage, "archivos/" + file.name);
+    await uploadBytes(storageRef, file);
+    const url = await getDownloadURL(storageRef);
+    document.getElementById("uploadStatus").textContent = "Archivo subido: " + url;
+  });
 </script>
 </body>
 </html>
-
-  </main>
-
-  <
