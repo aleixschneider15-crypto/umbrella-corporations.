@@ -1,0 +1,42 @@
+<script type="module">
+  // Importar Firebase desde el CDN
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { 
+    getAuth, 
+    signInWithEmailAndPassword, 
+    onAuthStateChanged, 
+    signOut 
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+  // Aquí pegas tu configuración real de Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyDCliOcd9eQky_HrT4EPciJQFPN5h7L3vw",
+    authDomain: "umbrella-web.firebaseapp.com",
+    projectId: "umbrella-web",
+    storageBucket: "umbrella-web.firebasestorage.app",
+    messagingSenderId: "852354344645",
+    appId: "1:852354344645:web:8280c7a88ae5d2973af2ac",
+    measurementId: "G-LL39DJFBMQ"
+  };
+
+  // Inicializar Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  // Aquí ya puedes usar auth para login/logout
+  const form = document.getElementById("loginForm");
+  const msg = document.getElementById("mensaje");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    try {
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      msg.textContent = "✅ Bienvenido " + cred.user.email;
+    } catch (err) {
+      msg.textContent = "❌ Error: " + err.message;
+    }
+  });
+</script>
