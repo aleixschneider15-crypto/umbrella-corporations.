@@ -1,42 +1,144 @@
-<script type="module">
-  // Importar Firebase desde el CDN
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { 
-    getAuth, 
-    signInWithEmailAndPassword, 
-    onAuthStateChanged, 
-    signOut 
-  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-
-  // Aquí pegas tu configuración real de Firebase
-  const firebaseConfig = {
-    apiKey: "AIzaSyDCliOcd9eQky_HrT4EPciJQFPN5h7L3vw",
-    authDomain: "umbrella-web.firebaseapp.com",
-    projectId: "umbrella-web",
-    storageBucket: "umbrella-web.firebasestorage.app",
-    messagingSenderId: "852354344645",
-    appId: "1:852354344645:web:8280c7a88ae5d2973af2ac",
-    measurementId: "G-LL39DJFBMQ"
-  };
-
-  // Inicializar Firebase
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-
-  // Aquí ya puedes usar auth para login/logout
-  const form = document.getElementById("loginForm");
-  const msg = document.getElementById("mensaje");
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    try {
-      const cred = await signInWithEmailAndPassword(auth, email, password);
-      msg.textContent = "✅ Bienvenido " + cred.user.email;
-    } catch (err) {
-      msg.textContent = "❌ Error: " + err.message;
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Umbrella Corporations — Acceso</title>
+  <style>
+    :root {
+      --bg: #0b0b0c;
+      --glass: rgba(20, 20, 22, 0.7);
+      --text: #e9eaec;
+      --muted: #a9abb0;
+      --accent: #e50914;
+      --border: #2a2c31;
     }
-  });
-</script>
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; }
+    body {
+      color: var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: #000 url("umbrella-bg.png") center/cover fixed no-repeat;
+    }
+    .overlay { position: fixed; inset: 0; background: radial-gradient(1200px 600px at 20% -10%, rgba(0,0,0,0.6), rgba(0,0,0,0.85)); }
+    header { position: relative; z-index: 2; padding: 28px 24px; display: flex; justify-content: center; }
+    .brand { display: flex; align-items: center; gap: 14px; padding: 10px 16px; border-radius: 999px; background: rgba(0,0,0,0.35); border: 1px solid var(--border); }
+    .brand .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); }
+    .brand h1 { margin: 0; font-size: 1.1rem; letter-spacing: 0.12em; text-transform: uppercase; }
+    main { position: relative; z-index: 2; min-height: calc(100% - 76px); display: grid; place-items: center; padding: 24px; }
+    .card { width: 100%; max-width: 420px; border: 1px solid var(--border); border-radius: 16px; background: var(--glass); box-shadow: 0 20px 60px rgba(0,0,0,0.6); padding: 22px; }
+    .card h2 { margin: 0 0 6px; font-size: 1.3rem; }
+    .sub { margin: 0 0 18px; color: var(--muted); font-size: 0.95rem; }
+    label { display: block; margin: 10px 0 6px; color: var(--muted); font-size: 0.9rem; }
+    input { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: rgba(255,255,255,0.06); color: var(--text); }
+    input::placeholder { color: #c2c4c8; }
+    button { width: 100%; margin-top: 14px; padding: 12px 14px; border-radius: 10px; border: 1px solid #3a3d44; background: linear-gradient(180deg, #1b1c21, #15161a); color: var(--text); cursor: pointer; }
+    button:hover { border-color: #50545c; }
+    .msg { margin-top: 10px; min-height: 22px; }
+    .protected { margin-top: 18px; padding: 14px; border-radius: 12px; border: 1px dashed #3a3d44; background: rgba(255,255,255,0.04); }
+    .sr-only { position: absolute; left: -9999px; }
+    footer { position: relative; z-index: 2; padding: 18px; text-align: center; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="overlay"></div>
+
+  <header>
+    <div class="brand">
+      <div class="dot"></div>
+      <h1>Umbrella Corporations</h1>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Iniciar sesión</h2>
+      <p class="sub">Debes iniciar sesión para acceder al contenido.</p>
+
+      <form id="loginForm">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="usuario@dominio.com" required />
+
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" placeholder="••••••••" required />
+
+        <button type="submit" id="loginBtn">Entrar</button>
+        <p id="mensaje" class="msg"></p>
+      </form>
+
+      <button id="logoutBtn" style="display:none;">Cerrar sesión</button>
+
+      <div id="contenido-protegido" class="protected sr-only">
+        <h3>Panel privado</h3>
+        <p>Acceso concedido. Bienvenido al portal interno de Umbrella Corporations.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 — Contenido protegido</p>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDCliOcd9eQky_HrT4EPciJQFPN5h7L3vw",
+      authDomain: "umbrella-web.firebaseapp.com",
+      projectId: "umbrella-web",
+      storageBucket: "umbrella-web.firebasestorage.app",
+      messagingSenderId: "852354344645",
+      appId: "1:852354344645:web:8280c7a88ae5d2973af2ac",
+      measurementId: "G-LL39DJFBMQ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const form = document.getElementById("loginForm");
+    const msg = document.getElementById("mensaje");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const protectedBox = document.getElementById("contenido-protegido");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      msg.textContent = "Procesando…";
+
+      try {
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        msg.textContent = "✅ Bienvenido " + cred.user.email;
+      } catch (err) {
+        const errores = {
+          "auth/invalid-email": "El email no es válido.",
+          "auth/user-not-found": "No existe un usuario con ese email.",
+          "auth/wrong-password": "Contraseña incorrecta.",
+          "auth/too-many-requests": "Demasiados intentos. Intenta más tarde.",
+          "auth/network-request-failed": "Error de red. Revisa tu conexión."
+        };
+        msg.textContent = "❌ " + (errores[err.code] || "Error: " + err.message);
+      }
+    });
+
+    logoutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      msg.textContent = "Has cerrado sesión.";
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      const conectado = !!user;
+      form.style.display = conectado ? "none" : "block";
+      logoutBtn.style.display = conectado ? "inline-block" : "none";
+      protectedBox.classList.toggle("sr-only", !conectado);
+    });
+  </script>
+</body>
+</html>
