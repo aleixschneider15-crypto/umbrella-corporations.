@@ -11,8 +11,6 @@
       background-color: #0a0f1c;
       color: #e0e0e0;
     }
-
-    /* Splash screen */
     #splash {
       position: fixed;
       top: 0; left: 0;
@@ -43,8 +41,6 @@
     @keyframes fadeOut {
       to { opacity: 0; visibility: hidden; }
     }
-
-    /* Login screen */
     #login-screen {
       position: fixed;
       top: 0; left: 0;
@@ -79,7 +75,6 @@
       margin-top: 10px;
       display: none;
     }
-
     header {
       background: #111827;
       padding: 10px 20px;
@@ -174,13 +169,10 @@
   </style>
 </head>
 <body>
-  <!-- Splash screen -->
   <div id="splash">
     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Umbrella_Corporation_logo.svg/512px-Umbrella_Corporation_logo.svg.png" alt="Umbrella Logo" />
     <h1>Umbrella Tactical Systems</h1>
   </div>
-
-  <!-- Login screen -->
   <div id="login-screen">
     <h2 style="color:#60a5fa;">🔐 Acceso a Umbrella Tactical</h2>
     <input id="user" type="text" placeholder="Usuario" />
@@ -188,8 +180,6 @@
     <button onclick="login()">Entrar</button>
     <p id="login-error">Credenciales incorrectas</p>
   </div>
-
-  <!-- Intranet -->
   <header>
     <h1>🛡️ Umbrella Tactical Intranet</h1>
     <span id="clock"></span>
@@ -251,3 +241,77 @@
       </section>
 
       <section id="alertas" class="section">
+        <div class="card">
+          <h2>Alertas recientes</h2>
+          <ul>
+            <li>⚠️ 22:14 — Movimiento no autorizado en pasillo B7</li>
+            <li>⚠️ 21:50 — Falla eléctrica en zona de cuarentena</li>
+            <li>⚠️ 20:30 — Código rojo en laboratorio subterráneo</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="inteligencia" class="section">
+        <div class="card">
+          <h2>🧠 Informes de inteligencia</h2>
+          <ul>
+            <li>📄 Informe Alfa — Actividad biológica en zona restringida</li>
+            <li>📄 Informe Beta — Patrón de mutación observado en espécimen T-103</li>
+            <li>📄 Informe Gamma — Comunicaciones interceptadas en zona Raccoon Este</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="recursos" class="section">
+        <div class="card">
+          <h2>📦 Recursos disponibles</h2>
+          <table>
+            <thead><tr><th>Recurso</th><th>Tipo</th><th>Estado</th></tr></thead>
+            <tbody>
+              <tr><td>Antídoto VX-9</td><td>Químico</td><td>Disponible</td></tr>
+              <tr><td>Unidad Bravo</td><td>Operativa</td><td>En misión</td></tr>
+              <tr><td>Vehículo blindado R-12</td><td>Transporte</td><td>En mantenimiento</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="protocolos" class="section">
+        <div class="card">
+          <h2>📜 Protocolos de emergencia</h2>
+          <ol>
+            <li>🔒 Protocolo 01 — Sellado de laboratorio</li>
+            <li>🔥 Protocolo 02 — Activación de sistema de purga</li>
+            <li>🚁 Protocolo 03 — Evacuación táctica</li>
+            <li>🧨 Protocolo 04 — Autodestrucción remota</li>
+          </ol>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    function mostrar(id) {
+      document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function actualizarReloj() {
+      const ahora = new Date();
+      document.getElementById("clock").textContent = ahora.toLocaleTimeString();
+    }
+    setInterval(actualizarReloj, 1000);
+    actualizarReloj();
+
+    function login() {
+      const u = document.getElementById("user").value;
+      const p = document.getElementById("pass").value;
+      if (u === "umbrella" && p === "tactical") {
+        document.getElementById("login-screen").style.display = "none";
+      } else {
+        document.getElementById("login-error").style.display = "block";
+      }
+    }
+  </script>
+</body>
+</html>
