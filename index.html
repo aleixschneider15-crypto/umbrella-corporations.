@@ -1,192 +1,253 @@
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import {
-    getAuth,
-    signInWithEmailAndPassword,
-    onAuthStateChanged,
-    signOut
-  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-  import {
-    getFirestore,
-    collection,
-    addDoc,
-    getDocs,
-    query,
-    where,
-    setDoc,
-    doc,
-    deleteDoc
-  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-  import {
-    getStorage,
-    ref,
-    uploadBytes,
-    getDownloadURL
-  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDCliOcd9eQky_HrT4EPciJQFPN5h7L3vw",
-    authDomain: "umbrella-web.firebaseapp.com",
-    projectId: "umbrella-web",
-    storageBucket: "umbrella-web.appspot.com",
-    messagingSenderId: "852354344645",
-    appId: "1:852354344645:web:8280c7a88ae5d2973af2ac",
-    measurementId: "G-LL39DJFBMQ"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const storage = getStorage(app);
-
-  const msg = document.getElementById("mensaje");
-
-  const logoutBtn = document.getElementById("logoutBtn");
-  const logoutBtn2 = document.getElementById("logoutBtn2");
-  const logoutBtn3 = document.getElementById("logoutBtn3");
-  const logoutBtn4 = document.getElementById("logoutBtn4");
-
-  document.getElementById("loginForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-    msg.textContent = "Procesando…";
-    try {
-      const cred = await signInWithEmailAndPassword(auth, email, password);
-      msg.textContent = "✅ Bienvenido " + cred.user.email;
-    } catch (err) {
-      msg.textContent = "❌ " + err.message;
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Umbrella Tactical Intranet</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', monospace;
+      background-color: #0a0f1c;
+      color: #e0e0e0;
     }
-  });
 
-  logoutBtn.onclick = logoutBtn2.onclick = logoutBtn3.onclick = logoutBtn4.onclick = async () => {
-    await signOut(auth);
-    msg.textContent = "Has cerrado sesión.";
-    mostrarSeccion("loginSection");
-  };
-
-  onAuthStateChanged(auth, async (user) => {
-    const conectado = !!user;
-    document.getElementById("loginSection").classList.toggle("sr-only", conectado);
-    document.getElementById("contenido-protegido").classList.toggle("sr-only", !conectado);
-    ["correo", "medico", "stars", "archivos"].forEach(id => {
-      document.getElementById(id).classList.add("sr-only");
-    });
-
-    if (user) {
-      const token = await user.getIdTokenResult();
-      const rol = token.claims.rol;
-      if (rol === "medico") mostrarSeccion("medico");
-      else if (rol === "agente") mostrarSeccion("stars");
-      else if (rol === "admin") mostrarSeccion("contenido-protegido");
+    /* Splash screen */
+    #splash {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 9999;
+      animation: fadeOut 2s ease-in-out 3s forwards;
     }
-  });
+    #splash img {
+      width: 120px;
+      animation: spin 3s linear infinite;
+    }
+    #splash h1 {
+      color: #ff0000;
+      font-size: 1.5rem;
+      margin-top: 20px;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes fadeOut {
+      to { opacity: 0; visibility: hidden; }
+    }
 
-  window.mostrarSeccion = function(id) {
-    ["contenido-protegido", "correo", "medico", "stars", "archivos", "loginSection"].forEach(sec => {
-      document.getElementById(sec).classList.add("sr-only");
-    });
-    document.getElementById(id).classList.remove("sr-only");
-  };
+    /* Login screen */
+    #login-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #0a0f1c;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9998;
+    }
+    #login-screen input {
+      margin: 10px;
+      width: 200px;
+      padding: 8px;
+      background: #1e293b;
+      color: #fff;
+      border: 1px solid #374151;
+      border-radius: 4px;
+    }
+    #login-screen button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #login-error {
+      color: red;
+      margin-top: 10px;
+      display: none;
+    }
 
-  // Portal Médico
-  document.getElementById("formPaciente").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const ficha = {
-      id: document.getElementById("pacienteId").value,
-      nombre: document.getElementById("pacienteNombre").value,
-      diagnostico: document.getElementById("pacienteDiagnostico").value,
-      estado: document.getElementById("pacienteEstado").value
-    };
-    await addDoc(collection(db, "pacientes"), ficha);
-    alert("Ficha guardada");
-  });
+    header {
+      background: #111827;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #2563eb;
+    }
+    header h1 {
+      font-size: 1.2rem;
+      color: #60a5fa;
+      margin: 0;
+    }
+    .container {
+      display: flex;
+      height: calc(100vh - 50px);
+    }
+    nav {
+      width: 220px;
+      background: #1f2937;
+      padding: 20px;
+      border-right: 2px solid #2563eb;
+    }
+    nav button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      background: #374151;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 4px;
+      text-align: left;
+    }
+    nav button:hover {
+      background: #2563eb;
+    }
+    main {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .section {
+      display: none;
+    }
+    .active {
+      display: block;
+    }
+    .card {
+      background: #111827;
+      padding: 20px;
+      border: 1px solid #374151;
+      border-radius: 6px;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      border: 1px solid #374151;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background: #2563eb;
+      color: #fff;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 6px;
+      background: #1e293b;
+      color: #fff;
+      border: 1px solid #374151;
+      border-radius: 4px;
+    }
+    button.submit {
+      margin-top: 12px;
+      padding: 10px 16px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button.submit:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+  <!-- Splash screen -->
+  <div id="splash">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2e/Umbrella_Corporation_logo.svg/512px-Umbrella_Corporation_logo.svg.png" alt="Umbrella Logo" />
+    <h1>Umbrella Tactical Systems</h1>
+  </div>
 
-  document.getElementById("buscarPorIdForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const idBuscado = document.getElementById("buscarId").value;
-    const q = query(collection(db, "pacientes"), where("id", "==", idBuscado));
-    const resultados = await getDocs(q);
-    const contenedor = document.getElementById("resultadoId");
-    contenedor.innerHTML = "";
-    resultados.forEach(doc => {
-      const data = doc.data();
-      contenedor.innerHTML += `
-        <div>
-          <h4>${data.nombre}</h4>
-          <p>Diagnóstico: ${data.diagnostico}</p>
-          <p>Estado: ${data.estado}</p>
-          <button onclick="editarPaciente('${doc.id}')">Editar</button>
-          <button onclick="eliminarPaciente('${doc.id}')">Eliminar</button>
+  <!-- Login screen -->
+  <div id="login-screen">
+    <h2 style="color:#60a5fa;">🔐 Acceso a Umbrella Tactical</h2>
+    <input id="user" type="text" placeholder="Usuario" />
+    <input id="pass" type="password" placeholder="Contraseña" />
+    <button onclick="login()">Entrar</button>
+    <p id="login-error">Credenciales incorrectas</p>
+  </div>
+
+  <!-- Intranet -->
+  <header>
+    <h1>🛡️ Umbrella Tactical Intranet</h1>
+    <span id="clock"></span>
+  </header>
+  <div class="container">
+    <nav>
+      <button onclick="mostrar('misiones')">📁 Misiones</button>
+      <button onclick="mostrar('agentes')">🧑‍✈️ Agentes</button>
+      <button onclick="mostrar('laboratorio')">🧬 Laboratorio</button>
+      <button onclick="mostrar('alertas')">⚠️ Alertas</button>
+      <button onclick="mostrar('inteligencia')">🧠 Inteligencia</button>
+      <button onclick="mostrar('recursos')">📦 Recursos</button>
+      <button onclick="mostrar('protocolos')">📜 Protocolos</button>
+    </nav>
+    <main>
+      <section id="misiones" class="section active">
+        <div class="card">
+          <h2>Misiones activas</h2>
+          <table>
+            <thead><tr><th>Nombre</th><th>Estado</th><th>Zona</th></tr></thead>
+            <tbody>
+              <tr><td>Operación Némesis</td><td>En curso</td><td>Sector RPD-3</td></tr>
+              <tr><td>Contención T-Virus</td><td>Finalizada</td><td>Laboratorio B</td></tr>
+            </tbody>
+          </table>
         </div>
-      `;
-    });
-  });
-
-  window.editarPaciente = async function(docId) {
-    const nuevoNombre = prompt("Nuevo nombre:");
-    const nuevoDiagnostico = prompt("Nuevo diagnóstico:");
-    const nuevoEstado = prompt("Nuevo estado:");
-    if (nuevoNombre && nuevoDiagnostico && nuevoEstado) {
-      await setDoc(doc(db, "pacientes", docId), {
-        nombre: nuevoNombre,
-        diagnostico: nuevoDiagnostico,
-        estado: nuevoEstado
-      }, { merge: true });
-      alert("Ficha actualizada");
-    }
-  };
-
-  window.eliminarPaciente = async function(docId) {
-    if (confirm("¿Eliminar esta ficha?")) {
-      await deleteDoc(doc(db, "pacientes", docId));
-      alert("Ficha eliminada");
-    }
-  };
-
-  // Panel S.T.A.R.S.
-  document.getElementById("formMision").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const mision = {
-      agente: document.getElementById("agente").value,
-      rango: document.getElementById("rango").value,
-      estado: document.getElementById("estado").value,
-      mision: document.getElementById("mision").value
-    };
-    await addDoc(collection(db, "misiones"), mision);
-    alert("Misión registrada");
-  });
-
-  document.getElementById("buscarAgenteForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const agente = document.getElementById("buscarAgente").value;
-    const q = query(collection(db, "misiones"), where("agente", "==", agente));
-    const resultados = await getDocs(q);
-    const contenedor = document.getElementById("resultadoMisiones");
-    contenedor.innerHTML = "";
-    resultados.forEach(doc => {
-      const data = doc.data();
-      contenedor.innerHTML += `
-        <div>
-          <h4>${data.agente}</h4>
-          <p>Rango: ${data.rango}</p>
-          <p>Estado: ${data.estado}</p>
-          <p>Misión: ${data.mision}</p>
+        <div class="card">
+          <h3>Registrar nueva misión</h3>
+          <input type="text" placeholder="Nombre de misión" />
+          <input type="text" placeholder="Zona asignada" />
+          <select>
+            <option>Pendiente</option>
+            <option>En curso</option>
+            <option>Finalizada</option>
+          </select>
+          <textarea placeholder="Descripción táctica"></textarea>
+          <button class="submit">Registrar</button>
         </div>
-      `;
-    });
-  });
+      </section>
 
-  // Subida de archivos
-  document.getElementById("uploadForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const file = document.getElementById("fileInput").files[0];
-    if (!file) return;
-    const storageRef = ref(storage, "archivos/" + file.name);
-    await uploadBytes(storageRef, file);
-    const url = await getDownloadURL(storageRef);
-    document.getElementById("uploadStatus").textContent = "Archivo subido: " + url;
-  });
-</script>
-</body>
-</html>
+      <section id="agentes" class="section">
+        <div class="card">
+          <h2>Agentes activos</h2>
+          <ul>
+            <li>🧑‍✈️ Jill Valentine — Rango: Teniente</li>
+            <li>🧑‍✈️ Chris Redfield — Rango: Capitán</li>
+            <li>🧑‍✈️ Albert Wesker — Rango: Supervisor</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="laboratorio" class="section">
+        <div class="card">
+          <h2>Laboratorio</h2>
+          <p>Estado de contención: <strong style="color:orange;">Inestable</strong></p>
+          <p>Último incidente: Fuga de espécimen T-002</p>
+          <p>Acceso restringido a personal nivel 4+</p>
+        </div>
+      </section>
+
+      <section id="alertas" class="section">
